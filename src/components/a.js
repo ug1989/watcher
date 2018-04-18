@@ -8,21 +8,17 @@ export default class A extends React.Component {
 
   constructor(props) {
     super();
-    this.state = {
-      num: 2
-    }
   }
 
   componentDidMount() {
-
+    console.log('A componentDidMount');
   }
 
   render() {
-    console.log(`render A`, +new Date);
-    const { num } = this.state;
+    console.log(`A render`, +new Date);
 
     return (
-      <div>{ num - (shareData.t || 0) }</div>
+      <div>{ `${shareData.t}`.split('').join('\t \t') }</div>
     );
   }
 

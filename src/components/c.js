@@ -2,8 +2,6 @@ import React from 'react';
 import { watch, notify } from '../utils/watcher';
 import shareData from '../utils/data';
 
-const start = +new Date(1234567890);
-
 @watch(shareData)
 export default class C extends React.Component {
 
@@ -13,16 +11,24 @@ export default class C extends React.Component {
   }
 
   componentDidMount() {
-    shareData.t = +new Date;
-    notify(shareData);
+    console.log('C componentDidMount');
+    this.timer = setInterval(() => {
+      shareData.t = +new Date;
+      notify(shareData);
+      console.log('C.timer', new Date);
+    }, 40);
+  }
+
+  componentWillUnmount() {
+    console.log('C componentWillUnmount');
+    clearInterval(this.timer);
   }
 
   render() {
-    console.log(`render C`, +new Date);
-    const { num } = this.state;
+    console.log(`C render`, +new Date);
 
     return (
-      <div>{`${shareData.t - start}`}</div>
+      <div>{ `${shareData.t}`.split('').join('_') }</div>
     );
   }
 

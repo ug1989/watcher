@@ -7,22 +7,21 @@ export default class B extends React.Component {
 
   constructor(props) {
     super();
-    this.state = {
-      num: 6
-    }
   }
 
   componentDidMount() {
+    console.log('B componentDidMount');
+  }
+
+  componentWillUnmount() {
+    console.log('B componentWillUnmount');
   }
 
   render() {
-    console.log(`render B`, +new Date);
-    const { num } = this.state;
+    console.log(`B render`, +new Date);
 
     return (
-      <div>
-        <span>{shareData.t}</span>
-      </div>
+      <div>{ `${shareData.t}`.split('').join('-') }</div>
     );
   }
 

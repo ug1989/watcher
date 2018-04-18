@@ -18,8 +18,18 @@ class hookComponent extends React.Component {
             const dataIndex = allDataWatched.indexOf(dataClassWatched);
             if (dataIndex == -1) return;
             (componentsDataCare[dataIndex] = componentsDataCare[dataIndex] || []).push(this);
-            console.log(decoratorClassList, classWatchedData, allDataWatched, componentsDataCare);
         });
+
+        // 覆写观察数据的组件实例 componentWillUnmount 方法
+        const thisPrototype = this.constructor.prototype;
+        const thisComponentWillUnmount = thisPrototype.componentWillUnmount;
+        const hookComponentWillUnmount = hookComponent.prototype.componentWillUnmount;
+        const inheritComponentWillUnmount = thisComponentWillUnmount == hookComponentWillUnmount;
+        
+        this.componentWillUnmount = inheritComponentWillUnmount ? hookComponentWillUnmount : () => {
+            thisComponentWillUnmount.call(this);
+            hookComponentWillUnmount.call(this);
+        };
     }
 
     componentWillUnmount() {
@@ -34,24 +44,21 @@ class hookComponent extends React.Component {
             const thisIndex = componentsList.indexOf(this);
             if (thisIndex == -1) return;
             componentsList.splice(thisIndex, 1);
-            console.log(decoratorClassList, classWatchedData, allDataWatched, componentsDataCare);
         });
     }
 }
-
-let hookClass = null;
 
 // 标记组件构造器与依赖变量的关系，方便 hookComponent 安排依赖组建位置
 function watch(bindData) {
     allDataWatched.indexOf(bindData) == -1 && allDataWatched.push(bindData);
     return (classFn) => {
         const classBase = classFn.prototype;
-        if (classBase !== hookClass) {
-            hookClass = classBase;
+        const classIndex = decoratorClassList.indexOf(classFn);
+        if (classIndex == -1) {
+            decoratorClassList.push(classFn);
             Object.setPrototypeOf(classFn, hookComponent);
             Object.setPrototypeOf(classFn.prototype, hookComponent.prototype);
         }
-        decoratorClassList.indexOf(classFn) == -1 && decoratorClassList.push(classFn);
         const classFnIndex = decoratorClassList.indexOf(classFn);
         const classFnData = classWatchedData[classFnIndex] = classWatchedData[classFnIndex] || [];
         classFnData.indexOf(bindData) == -1 && classFnData.push(bindData);

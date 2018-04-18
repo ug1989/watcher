@@ -9,26 +9,30 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      num: 0
+      num: 1
     };
   }
 
   componentDidMount() {
     setInterval(_ => {
       this.setState({
-        num: Math.ceil(Math.random() * 100)
+        num: (this.state.num + 1) % 24
       });
-    }, 300);
+    }, 100);
   }
 
   render() {
     const { num } = this.state;
+    console.log('I render', +new Date);
 
     return (
       <div>
+        {num % 2 && <A /> || null}
         {num % 3 && <A /> || null}
-        {num % 5 && <B /> || null}
-        {num % 7 && <C /> || null}
+        {num % 6 && <A /> || null}
+        {num % 8 && <B /> || null}
+        {num % 12 && <B /> || null}
+        {num % 24 && <C /> || null}
       </div>
     )
   }
