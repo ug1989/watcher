@@ -3,7 +3,7 @@ import { watch, notify } from '../utils/watcher';
 import shareData from '../utils/data';
 import C from './c';
 
-@watch(shareData)
+// @watch(shareData)
 export default class A extends React.Component {
 
   constructor(props) {
