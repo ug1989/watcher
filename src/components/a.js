@@ -16,9 +16,10 @@ export default class A extends React.Component {
 
   render() {
     console.log(`A render`, +new Date);
+    const t = `${shareData.t}`;
 
     return (
-      <div>{ `${shareData.t}`.split('').join('\t \t') }</div>
+      <div style={{color: `#${+t.slice(-6).split('').reverse().join('') + 15641}`}}>{ t }</div>
     );
   }
 

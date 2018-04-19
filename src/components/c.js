@@ -16,7 +16,7 @@ export default class C extends React.Component {
       shareData.t = +new Date;
       notify(shareData);
       console.log('C.timer', new Date);
-    }, 40);
+    }, 400);
   }
 
   componentWillUnmount() {
@@ -26,9 +26,9 @@ export default class C extends React.Component {
 
   render() {
     console.log(`C render`, +new Date);
-
+    const t = `${shareData.t}`;
     return (
-      <div>{ `${shareData.t}`.split('').join('_') }</div>
+      <div style={{color: `#${+t.slice(-6).split('').reverse().join('') + 15641}`}}>{ t }</div>
     );
   }
 

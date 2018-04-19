@@ -18,7 +18,7 @@ class App extends React.Component {
       this.setState({
         num: (this.state.num + 1) % 24
       });
-    }, 100);
+    }, 10000);
   }
 
   render() {
