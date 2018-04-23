@@ -2,6 +2,8 @@ import React from 'react';
 import { watch, notify } from '../utils/watcher';
 import shareData from '../utils/data';
 
+let renderTimes = 1;
+
 @watch(shareData)
 export default class B extends React.Component {
 
@@ -18,7 +20,7 @@ export default class B extends React.Component {
   }
 
   render() {
-    console.log(`B render`, +new Date);
+    console.log(`B render`, +new Date, renderTimes++);
     const t = `${shareData.t}`;
 
     return (
