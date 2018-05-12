@@ -1,5 +1,5 @@
 {
-  "name": "",
+  "name": "parcel-react-dev",
   "version": "",
   "scripts": {
     "start": "parcel src/index.html"
