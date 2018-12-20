@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 
 import A from './components/a';
 import B from './components/b';
@@ -9,16 +8,16 @@ export default class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      num: 1
+      num: 100
     };
   }
 
   componentDidMount() {
     setInterval(_ => {
       this.setState({
-        num: (this.state.num + 1) % 24
+        // num: (this.state.num + 1) % 24
       });
-    }, 1000);
+    }, 10000);
   }
 
   render() {

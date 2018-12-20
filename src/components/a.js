@@ -1,11 +1,14 @@
 import React from 'react';
-import { watch, notify } from '../utils/watcher';
-import shareData from '../utils/data';
-import C from './c';
+import { watch } from '../utils/watcher';
+import shareData, { setShareData }  from '../utils/data';
 
 let renderTimes = 1;
 
-@watch(shareData)
+setInterval(() => {
+  setShareData('key2', shareData.key1 * 2);
+}, 300);
+
+@watch(shareData, 'key1')
 export default class A extends React.Component {
 
   constructor(props) {
@@ -18,10 +21,10 @@ export default class A extends React.Component {
 
   render() {
     console.log(`A render`, +new Date, renderTimes++);
-    const t = `${shareData.t}`;
+    const t = `${shareData.key1}`;
 
     return (
-      <div style={{color: `#${+t.slice(-6).split('').reverse().join('') + 15641}`}}>{ t }</div>
+      <div style={{background: `#${+t.slice(-6).split('').reverse().join('') + 15641}`}}>{ t }</div>
     );
   }
 

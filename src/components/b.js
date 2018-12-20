@@ -1,10 +1,14 @@
 import React from 'react';
-import { watch, notify } from '../utils/watcher';
-import shareData from '../utils/data';
+import { watch } from '../utils/watcher';
+import shareData, { setShareData } from '../utils/data';
 
 let renderTimes = 1;
 
-@watch(shareData)
+setInterval(() => {
+  // setShareData('key3', shareData.key2 * 2);
+}, 1000);
+
+@watch(shareData, ['key2', 'key3'])
 export default class B extends React.Component {
 
   constructor(props) {
@@ -19,12 +23,16 @@ export default class B extends React.Component {
     console.log('B componentWillUnmount');
   }
 
+  componentDidCatch(err) {
+    console.log(err)
+  }
+
   render() {
     console.log(`B render`, +new Date, renderTimes++);
-    const t = `${shareData.t}`;
+    const t = `${shareData.key2}`;
 
     return (
-      <div style={{color: `#${+t.slice(-6).split('').reverse().join('') - 32641}`}}>{ t }</div>
+      <div style={{background: `#${+t.slice(-6).split('').reverse().join('') - 32641}`}}>{ t }</div>
     );
   }
 

@@ -1,8 +1,26 @@
-import React from 'react';
-import { Map, Set } from 'core-js';
+/** 
+    classWatchedData = { 
+        { calss1 } : [ data1, data2 ], 
+        { class2 } : [ data2 ], 
+        { class3 } : [ data1 ] 
+    }; 
+    classWatchedKeys = {
+        { calss1 } : [ key1, key2 ], 
+        { class2 } : key2, 
+        { class3 } :  
+    };
+    componentsDataCare = { 
+        { data1 } : [ class1_entity, class3_entity ], 
+        { data2 } : [ class2_entity ] 
+    } 
+*/
 
-const classWatchedData = new Map;
-const componentsDataCare = new Map;
+import React from 'react';
+import { Set, WeakMap } from 'core-js';
+
+const classWatchedData = new WeakMap;
+const classWatchedKeys = new WeakMap;
+const componentsDataCare = new WeakMap;
 
 class hookComponent extends React.Component {
 
@@ -33,8 +51,10 @@ class hookComponent extends React.Component {
     }
 }
 
-function watch(bindData) {
+// 监听某个对象或该对象的某个值
+function watch(bindData, watchKey) {
     return (classFn) => {
+        classWatchedKeys[classFn] = watchKey;
         classWatchedData[classFn] = classWatchedData[classFn] || new Set;
         if (classWatchedData[classFn].has(bindData)) return;
         classWatchedData[classFn].add(bindData);
@@ -43,10 +63,25 @@ function watch(bindData) {
     }
 }
 
-// 通知变量更新，同步更新组件
-function notify(bindData) {
+// 通知组件更新
+function notify(bindData, changeKey) {
     (componentsDataCare[bindData] || []).forEach(component => {
-        component.forceUpdate();
+        const componentWatchedKey = classWatchedKeys[component.constructor];
+        if (!componentWatchedKey || !changeKey) {
+            return component.forceUpdate();
+        }
+        if (!Array.isArray(componentWatchedKey) && !Array.isArray(changeKey)) {
+            return (componentWatchedKey === changeKey) && component.forceUpdate();
+        }
+        if (Array.isArray(componentWatchedKey) && Array.isArray(changeKey)) {
+            return componentWatchedKey.some(key => changeKey.includes(key)) && component.forceUpdate();
+        }
+        if (Array.isArray(componentWatchedKey) && !Array.isArray(changeKey)) {
+            return componentWatchedKey.includes(changeKey) && component.forceUpdate();
+        }
+        if (!Array.isArray(componentWatchedKey) && Array.isArray(changeKey)) {
+            return changeKey.includes(componentWatchedKey) && component.forceUpdate();
+        }
     });
 }
 
