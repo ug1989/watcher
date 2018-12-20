@@ -26,7 +26,7 @@ export default class C extends B {
   }
 
   render() {
-    console.log(`C render`, +new Date, renderTimes++);
+    // console.log(`C render`, +new Date, renderTimes++);
     const t = `${shareData.key3}`;
     return (
       <div style={{background: `#${+t.slice(-6).split('').reverse().join('') + 15641}`}}>{ t }</div>
