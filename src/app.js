@@ -15,7 +15,7 @@ export default class App extends React.Component {
   componentDidMount() {
     setInterval(_ => {
       this.setState({
-        // num: (this.state.num + 1) % 24
+        num: (this.state.num + 1) % 24
       });
     }, 10000);
   }
