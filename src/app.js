@@ -18,7 +18,7 @@ export default class App extends React.Component {
       this.setState({
         num: (this.state.num + 1) % 24
       });
-    }, 10000);
+    }, 1000);
   }
 
   render() {

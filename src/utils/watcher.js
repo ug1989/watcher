@@ -1,23 +1,17 @@
 import React from 'react';
+import { Map, Set } from 'core-js';
 
-const decoratorClassList = [];      // classes call @watch
-const classWatchedData = {};        // data class watched
-const allDataWatched = [];          // all data watched
-const componentsDataCare = {};      // components data care
+const classWatchedData = new Map;
+const componentsDataCare = new Map;
 
-// 纪录依赖自身state之外需要更新的组件实例到对应数据关联的列表里
 class hookComponent extends React.Component {
 
     constructor() {
         super();
-        const classIndex = decoratorClassList.indexOf(this.constructor);
-        if (classIndex == -1) return;
 
-        // 绑定观察数据需要更新的组件实例
-        classWatchedData[classIndex].forEach(dataClassWatched => {
-            const dataIndex = allDataWatched.indexOf(dataClassWatched);
-            if (dataIndex == -1) return;
-            (componentsDataCare[dataIndex] = componentsDataCare[dataIndex] || []).push(this);
+        classWatchedData[this.constructor].forEach(dataClassWatched => {
+            componentsDataCare[dataClassWatched] = componentsDataCare[dataClassWatched] || new Set;
+            componentsDataCare[dataClassWatched].add(this);
         });
 
         // 覆写观察数据的组件实例 componentWillUnmount 方法
@@ -33,45 +27,27 @@ class hookComponent extends React.Component {
     }
 
     componentWillUnmount() {
-        const classIndex = decoratorClassList.indexOf(this.constructor);
-        if (classIndex == -1) return;
-
-        // 解绑观察数据需要更新的组件实例
-        classWatchedData[classIndex].forEach(dataClassWatched => {
-            const dataIndex = allDataWatched.indexOf(dataClassWatched);
-            if (dataIndex == -1) return;
-            const componentsList = componentsDataCare[dataIndex];
-            const thisIndex = componentsList.indexOf(this);
-            if (thisIndex == -1) return;
-            componentsList.splice(thisIndex, 1);
+        classWatchedData[this.constructor].forEach(dataClassWatched => {
+            componentsDataCare[dataClassWatched].delete(this)
         });
     }
 }
 
-// 标记组件构造器与依赖变量的关系，方便 hookComponent 安排依赖组建位置
 function watch(bindData) {
-    allDataWatched.indexOf(bindData) == -1 && allDataWatched.push(bindData);
     return (classFn) => {
-        const classBase = classFn.prototype;
-        const classIndex = decoratorClassList.indexOf(classFn);
-        if (classIndex == -1) {
-            decoratorClassList.push(classFn);
-            Object.setPrototypeOf(classFn, hookComponent);
-            Object.setPrototypeOf(classFn.prototype, hookComponent.prototype);
-        }
-        const classFnIndex = decoratorClassList.indexOf(classFn);
-        const classFnData = classWatchedData[classFnIndex] = classWatchedData[classFnIndex] || [];
-        classFnData.indexOf(bindData) == -1 && classFnData.push(bindData);
+        classWatchedData[classFn] = classWatchedData[classFn] || new Set;
+        if (classWatchedData[classFn].has(bindData)) return;
+        classWatchedData[classFn].add(bindData);
+        Object.setPrototypeOf(classFn, hookComponent);
+        Object.setPrototypeOf(classFn.prototype, hookComponent.prototype);
     }
 }
 
 // 通知变量更新，同步更新组件
 function notify(bindData) {
-    const dataIndex = allDataWatched.indexOf(bindData);
-    if (dataIndex == -1) return;
-    (componentsDataCare[dataIndex] || []).forEach(component => {
+    (componentsDataCare[bindData] || []).forEach(component => {
         component.forceUpdate();
     });
 }
 
-export {watch, notify, hookComponent}
+export { watch, notify }

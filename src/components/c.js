@@ -18,7 +18,7 @@ export default class C extends React.Component {
       shareData.t = +new Date;
       notify(shareData);
       console.log('C.timer', new Date);
-    }, 400);
+    }, 40);
   }
 
   componentWillUnmount() {
